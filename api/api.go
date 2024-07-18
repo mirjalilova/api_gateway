@@ -62,5 +62,15 @@ func Engine(handler *handlers.Handlers) *gin.Engine {
         share.PUT("/", handler.Updateshare)
 		share.POST("/", handler.CreateShare)
     }
+
+	millistone := router.Group("/millistones")
+	{
+		millistone.POST("/", handler.CreateMillistones)
+		millistone.PUT("/:id", handler.UpdateMillistones)
+		millistone.DELETE("/:id", handler.DeleteMillistones)
+		millistone.GET("/:id", handler.GetMillistone)
+		millistone.GET("/", handler.GetAllMillistones)
+		millistone.GET("/date", handler.GetByDateMillistones)
+	}
 	return router
 }

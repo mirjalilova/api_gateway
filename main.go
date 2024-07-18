@@ -19,7 +19,21 @@ func main() {
 
 	memoryConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", config.MEMORY_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		slog.Error("Error while connecting to reservation service: " + err.Error())
+		slog.Error("Error while connecting to memory service: " + err.Error())
+		return
+	}
+	defer memoryConn.Close()
+
+	timelineConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", config.TIMELINE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		slog.Error("Error while connecting to timeline service: " + err.Error())
+		return
+	}
+	defer memoryConn.Close()
+
+	userConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", config.USER_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		slog.Error("Error while connecting to user service: " + err.Error())
 		return
 	}
 	defer memoryConn.Close()
@@ -34,7 +48,7 @@ func main() {
 		log.Fatalf("Failed to connect to Redis: %v", err)
 	}
 
-	h := handlers.NewHandler(memoryConn, rdb)
+	h := handlers.NewHandler(memoryConn, timelineConn, userConn, rdb)
 
 	r := api.Engine(h)
 

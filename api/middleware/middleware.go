@@ -13,7 +13,7 @@ import (
 func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
-		log.Printf("Authorization Header: %s", authHeader) // Debug logging
+		log.Printf("Authorization Header: %s", authHeader)
 
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
@@ -21,14 +21,12 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Ensure the token is prefixed with "Bearer "
 		if !strings.HasPrefix(authHeader, "Bearer ") {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization header format"})
 			c.Abort()
 			return
 		}
 
-		// Remove "Bearer " prefix
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 		valid, err := token.ValidateToken(tokenString)
@@ -52,18 +50,16 @@ func JWTMiddleware() gin.HandlerFunc {
 
 func GetUserId(r *http.Request) (string, error) {
 	jwtToken := r.Header.Get("Authorization")
-	log.Printf("Authorization Header: %s", jwtToken) // Debug logging
+	log.Printf("Authorization Header: %s", jwtToken) 
 
 	if jwtToken == "" || strings.Contains(jwtToken, "Basic") {
 		return "unauthorized", nil
 	}
 
-	// Ensure the token is prefixed with "Bearer "
 	if !strings.HasPrefix(jwtToken, "Bearer ") {
 		return "unauthorized", errors.New("invalid authorization header format")
 	}
 
-	// Remove "Bearer " prefix
 	tokenString := strings.TrimPrefix(jwtToken, "Bearer ")
 
 	claims, err := token.ExtractClaim(tokenString)
