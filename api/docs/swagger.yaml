@@ -1,0 +1,620 @@
+definitions:
+  memory.Comment:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      memory_id:
+        type: string
+      updated_at:
+        type: string
+      writer_id:
+        type: string
+    type: object
+  memory.CommentCreateBody:
+    properties:
+      content:
+        type: string
+      memory_id:
+        type: string
+    type: object
+  memory.CommentUpdateBody:
+    properties:
+      content:
+        type: string
+    type: object
+  memory.GetAllRes:
+    properties:
+      count:
+        type: integer
+      memories:
+        items:
+          $ref: '#/definitions/memory.MemoryRes'
+        type: array
+    type: object
+  memory.Media:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      memory_id:
+        type: string
+      type:
+        type: string
+      url:
+        type: string
+    type: object
+  memory.MediaCreateBody:
+    properties:
+      memory_id:
+        type: string
+      type:
+        type: string
+      url:
+        type: string
+    type: object
+  memory.MemoryCreateBody:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      locations:
+        $ref: '#/definitions/memory.Point'
+      place_name:
+        type: string
+      privacy:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  memory.MemoryRes:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      locations:
+        $ref: '#/definitions/memory.Point'
+      place_name:
+        type: string
+      privacy:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  memory.Point:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+    type: object
+  memory.ShareCreateBody:
+    properties:
+      memory_id:
+        type: string
+      shared_with:
+        items:
+          type: string
+        type: array
+    type: object
+  memory.ShareDeleteBody:
+    properties:
+      memory_id:
+        type: string
+      unshared_with:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: string
+    type: object
+  memory.ShareRes:
+    properties:
+      memony_title:
+        type: string
+      shared_with:
+        items:
+          type: string
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for Time Capsule resources
+  title: Time Capsule API
+  version: "1.0"
+paths:
+  /comments:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a comment by ID
+      parameters:
+      - description: Comment ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete a comment
+      tags:
+      - comments
+    get:
+      consumes:
+      - application/json
+      description: Get all comments for a memory
+      parameters:
+      - description: Memory ID
+        in: query
+        name: memory_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memory.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get comments
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment on a memory
+      parameters:
+      - description: Comment Create Body
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/memory.CommentCreateBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment created successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a comment
+      tags:
+      - comments
+    put:
+      consumes:
+      - application/json
+      description: Update the content of an existing comment
+      parameters:
+      - description: Comment ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Comment Update Body
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/memory.CommentUpdateBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update a comment
+      tags:
+      - comments
+  /media:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a media entry by ID
+      parameters:
+      - description: Media ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Media deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete media
+      tags:
+      - media
+    get:
+      consumes:
+      - application/json
+      description: Get a media entry by ID
+      parameters:
+      - description: Memory ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memory.Media'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get media
+      tags:
+      - media
+    post:
+      consumes:
+      - application/json
+      description: Create a new media entry
+      parameters:
+      - description: Media Create Body
+        in: body
+        name: media
+        required: true
+        schema:
+          $ref: '#/definitions/memory.MediaCreateBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Media created successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create media
+      tags:
+      - media
+  /memories:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a memory by ID
+      parameters:
+      - description: Memory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memory deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete a memory
+      tags:
+      - memories
+    get:
+      consumes:
+      - application/json
+      description: Get a memory by ID
+      parameters:
+      - description: Memory ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memory.MemoryRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get a memory
+      tags:
+      - memories
+    post:
+      consumes:
+      - application/json
+      description: Create a new memory
+      parameters:
+      - description: MemoryCreateBody
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/memory.MemoryCreateBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memory created successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a memory
+      tags:
+      - memories
+    put:
+      consumes:
+      - application/json
+      description: Update a memory by ID
+      parameters:
+      - description: Memory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: MemoryCreateBody
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/memory.MemoryCreateBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memory updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update a memory
+      tags:
+      - memories
+  /memories/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all memories with optional filters
+      parameters:
+      - description: Start Date
+        in: query
+        name: start_date
+        type: string
+      - description: End Date
+        in: query
+        name: end_date
+        type: string
+      - description: Tag
+        in: query
+        name: tag
+        type: string
+      - description: Type
+        in: query
+        name: type
+        type: string
+      - description: User ID
+        in: query
+        name: user_id
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memory.GetAllRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get all memories
+      tags:
+      - memories
+  /shares:
+    get:
+      consumes:
+      - application/json
+      description: Get all shares for a memory
+      parameters:
+      - description: Memory ID
+        in: query
+        name: memory_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memory.ShareRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get shares
+      tags:
+      - shares
+    post:
+      consumes:
+      - application/json
+      description: Share a memory with other users
+      parameters:
+      - description: Share Create Body
+        in: body
+        name: share
+        required: true
+        schema:
+          $ref: '#/definitions/memory.ShareCreateBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Share created successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a share
+      tags:
+      - shares
+    put:
+      consumes:
+      - application/json
+      description: Remove a share for a memory
+      parameters:
+      - description: Share ID
+        in: query
+        name: share_id
+        required: true
+        type: string
+      - description: Share Delete Body
+        in: body
+        name: share
+        required: true
+        schema:
+          $ref: '#/definitions/memory.ShareDeleteBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Share updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Unshare a memory
+      tags:
+      - shares
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

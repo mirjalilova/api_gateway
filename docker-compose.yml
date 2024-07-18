@@ -1,0 +1,22 @@
+version: '3.91'
+
+services:
+  # API Gateway
+  gateway:
+    container_name: gateway
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      - Staffer
+
+# Docker Networks
+networks:
+  Staffer:
+      external: true
+      name: Staffer
+    
+
+# Docker Volumes
+volumes:
+  db:
