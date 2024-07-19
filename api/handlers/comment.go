@@ -15,6 +15,7 @@ import (
 // @Tags comments
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param comment body pb.CommentCreateBody true "Comment Create Body"
 // @Success 200 {object} string "Comment created successfully"
 // @Failure 400 {object} string "Bad Request"
@@ -50,6 +51,7 @@ func (h *Handlers) CreateComment(ctx *gin.Context) {
 // @Tags comments
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param memory_id query string true "Memory ID"
 // @Success 200 {object} pb.Comment
 // @Failure 400 {object} string "Bad Request"
@@ -78,6 +80,7 @@ func (h *Handlers) GetComments(ctx *gin.Context) {
 // @Tags comments
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id query string true "Comment ID"
 // @Param comment body pb.CommentUpdateBody true "Comment Update Body"
 // @Success 200 {object} string "Comment updated successfully"
@@ -111,6 +114,7 @@ func (h *Handlers) UpdateComment(ctx *gin.Context) {
 // @Tags comments
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id query string true "Comment ID"
 // @Success 200 {object} string "Comment deleted successfully"
 // @Failure 400 {object} string "Bad Request"

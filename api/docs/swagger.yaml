@@ -6,6 +6,17 @@ definitions:
       NewPassword:
         type: string
     type: object
+  auth.EditProfileReqBpdy:
+    properties:
+      DateOfBirth:
+        type: string
+      Email:
+        type: string
+      FullName:
+        type: string
+      Username:
+        type: string
+    type: object
   auth.Setting:
     properties:
       Language:
@@ -255,6 +266,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete a comment
       tags:
       - comments
@@ -283,6 +296,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get comments
       tags:
       - comments
@@ -312,6 +327,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create a comment
       tags:
       - comments
@@ -346,6 +363,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Update a comment
       tags:
       - comments
@@ -375,6 +394,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete media
       tags:
       - media
@@ -403,6 +424,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get media
       tags:
       - media
@@ -432,6 +455,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create media
       tags:
       - media
@@ -461,6 +486,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete a memory
       tags:
       - memories
@@ -489,6 +516,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get a memory
       tags:
       - memories
@@ -518,6 +547,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create a memory
       tags:
       - memories
@@ -552,6 +583,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Update a memory
       tags:
       - memories
@@ -604,7 +637,106 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get all memories
+      tags:
+      - memories
+  /memories/hictorical:
+    get:
+      consumes:
+      - application/json
+      description: Get all historical memories with optional filters
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memory.GetAllRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all historical memories
+      tags:
+      - memories
+  /memories/others:
+    get:
+      consumes:
+      - application/json
+      description: Get memories of others with optional filters
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memory.GetAllRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get memories of others
+      tags:
+      - memories
+  /memories/tag:
+    get:
+      consumes:
+      - application/json
+      description: Get by tag memories with optional filters
+      parameters:
+      - description: Tag
+        in: query
+        name: tag
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memory.GetAllRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get by tag memories
       tags:
       - memories
   /millistones:
@@ -649,6 +781,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get all millistones based on filters
       tags:
       - millistones
@@ -678,6 +812,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create a new millistone
       tags:
       - millistones
@@ -707,6 +843,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete a millistone by ID
       tags:
       - millistones
@@ -735,6 +873,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get a millistone by ID
       tags:
       - millistones
@@ -769,6 +909,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Update an existing millistone
       tags:
       - millistones
@@ -780,12 +922,12 @@ paths:
         user ID
       parameters:
       - description: Start date of range (YYYY-MM-DD)
-        in: path
+        in: query
         name: from_date
         required: true
         type: string
       - description: End date of range (YYYY-MM-DD)
-        in: path
+        in: query
         name: to_date
         required: true
         type: string
@@ -808,143 +950,11 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get millistones within a date range
       tags:
       - millistones
-  /passwords:
-    put:
-      consumes:
-      - application/json
-      description: Update the password of a user with the specified ID
-      parameters:
-      - description: Updated password details
-        in: body
-        name: password
-        required: true
-        schema:
-          $ref: '#/definitions/auth.ChangePasswordReqBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Password updated successfully
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Change user password
-      tags:
-      - passwords
-  /profiles:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve the profile of a user with the specified ID
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/auth.UserRes'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Get user profile
-      tags:
-      - profiles
-    put:
-      consumes:
-      - application/json
-      description: Update the profile of a user with the specified ID
-      parameters:
-      - description: Updated profile details
-        in: body
-        name: profile
-        required: true
-        schema:
-          $ref: '#/definitions/auth.UserRes'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Profile updated successfully
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Edit user profile
-      tags:
-      - profiles
-  /settings:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve the settings of a user with the specified ID
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/auth.Setting'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Get user settings
-      tags:
-      - settings
-    put:
-      consumes:
-      - application/json
-      description: Update the settings of a user with the specified ID
-      parameters:
-      - description: Updated setting details
-        in: body
-        name: setting
-        required: true
-        schema:
-          $ref: '#/definitions/auth.Setting'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Setting updated successfully
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Edit user settings
-      tags:
-      - settings
   /shares:
     get:
       consumes:
@@ -971,6 +981,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get shares
       tags:
       - shares
@@ -1000,6 +1012,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create a share
       tags:
       - shares
@@ -1034,10 +1048,12 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Unshare a memory
       tags:
       - shares
-  /users:
+  /user:
     delete:
       consumes:
       - application/json
@@ -1057,7 +1073,153 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete user
+      tags:
+      - users
+  /user/passwords:
+    put:
+      consumes:
+      - application/json
+      description: Update the password of a user with the specified ID
+      parameters:
+      - description: Updated password details
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/auth.ChangePasswordReqBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Change user password
+      tags:
+      - users
+  /user/profiles:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the profile of a user with the specified ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.UserRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update the profile of a user with the specified ID
+      parameters:
+      - description: Updated profile details
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/auth.EditProfileReqBpdy'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Edit user profile
+      tags:
+      - users
+  /user/setting:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the settings of a user with the specified ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.Setting'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get user settings
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update the settings of a user with the specified ID
+      parameters:
+      - description: Updated setting details
+        in: body
+        name: setting
+        required: true
+        schema:
+          $ref: '#/definitions/auth.Setting'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Setting updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Edit user settings
       tags:
       - users
 securityDefinitions:

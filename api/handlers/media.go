@@ -15,6 +15,7 @@ import (
 // @Tags media
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param media body pb.MediaCreateBody true "Media Create Body"
 // @Success 200 {object} string "Media created successfully"
 // @Failure 400 {object} string "Bad Request"
@@ -51,6 +52,7 @@ func (h *Handlers) CreateMedia(ctx *gin.Context) {
 // @Tags media
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id query string true "Memory ID"
 // @Success 200 {object} pb.Media
 // @Failure 400 {object} string "Bad Request"
@@ -79,6 +81,7 @@ func (h *Handlers) GetMedia(ctx *gin.Context) {
 // @Tags media
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id query string true "Media ID"
 // @Success 200 {object} string "Media deleted successfully"
 // @Failure 400 {object} string "Bad Request"

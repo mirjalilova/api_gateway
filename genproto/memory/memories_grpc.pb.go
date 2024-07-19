@@ -21,9 +21,8 @@ const _ = grpc.SupportPackageIsVersion8
 const (
 	MemoryService_Create_FullMethodName              = "/memory.MemoryService/Create"
 	MemoryService_Get_FullMethodName                 = "/memory.MemoryService/Get"
-	MemoryService_GetHistoricalMemory_FullMethodName = "/memory.MemoryService/GetHistoricalMemory"
-	MemoryService_GetByTagMemory_FullMethodName      = "/memory.MemoryService/GetByTagMemory"
 	MemoryService_GetAll_FullMethodName              = "/memory.MemoryService/GetAll"
+	MemoryService_GetMemoriesOfOthers_FullMethodName = "/memory.MemoryService/GetMemoriesOfOthers"
 	MemoryService_Update_FullMethodName              = "/memory.MemoryService/Update"
 	MemoryService_Delete_FullMethodName              = "/memory.MemoryService/Delete"
 )
@@ -34,9 +33,8 @@ const (
 type MemoryServiceClient interface {
 	Create(ctx context.Context, in *MemoryCreate, opts ...grpc.CallOption) (*Void, error)
 	Get(ctx context.Context, in *GetById, opts ...grpc.CallOption) (*MemoryRes, error)
-	GetHistoricalMemory(ctx context.Context, in *GetByUser, opts ...grpc.CallOption) (*GetAllRes, error)
-	GetByTagMemory(ctx context.Context, in *GetByTag, opts ...grpc.CallOption) (*GetAllRes, error)
 	GetAll(ctx context.Context, in *GetAllReq, opts ...grpc.CallOption) (*GetAllRes, error)
+	GetMemoriesOfOthers(ctx context.Context, in *GetByUser, opts ...grpc.CallOption) (*GetAllRes, error)
 	Update(ctx context.Context, in *MemoryUpdate, opts ...grpc.CallOption) (*Void, error)
 	Delete(ctx context.Context, in *GetById, opts ...grpc.CallOption) (*Void, error)
 }
@@ -69,30 +67,20 @@ func (c *memoryServiceClient) Get(ctx context.Context, in *GetById, opts ...grpc
 	return out, nil
 }
 
-func (c *memoryServiceClient) GetHistoricalMemory(ctx context.Context, in *GetByUser, opts ...grpc.CallOption) (*GetAllRes, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAllRes)
-	err := c.cc.Invoke(ctx, MemoryService_GetHistoricalMemory_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *memoryServiceClient) GetByTagMemory(ctx context.Context, in *GetByTag, opts ...grpc.CallOption) (*GetAllRes, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAllRes)
-	err := c.cc.Invoke(ctx, MemoryService_GetByTagMemory_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *memoryServiceClient) GetAll(ctx context.Context, in *GetAllReq, opts ...grpc.CallOption) (*GetAllRes, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAllRes)
 	err := c.cc.Invoke(ctx, MemoryService_GetAll_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoryServiceClient) GetMemoriesOfOthers(ctx context.Context, in *GetByUser, opts ...grpc.CallOption) (*GetAllRes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllRes)
+	err := c.cc.Invoke(ctx, MemoryService_GetMemoriesOfOthers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -125,9 +113,8 @@ func (c *memoryServiceClient) Delete(ctx context.Context, in *GetById, opts ...g
 type MemoryServiceServer interface {
 	Create(context.Context, *MemoryCreate) (*Void, error)
 	Get(context.Context, *GetById) (*MemoryRes, error)
-	GetHistoricalMemory(context.Context, *GetByUser) (*GetAllRes, error)
-	GetByTagMemory(context.Context, *GetByTag) (*GetAllRes, error)
 	GetAll(context.Context, *GetAllReq) (*GetAllRes, error)
+	GetMemoriesOfOthers(context.Context, *GetByUser) (*GetAllRes, error)
 	Update(context.Context, *MemoryUpdate) (*Void, error)
 	Delete(context.Context, *GetById) (*Void, error)
 	mustEmbedUnimplementedMemoryServiceServer()
@@ -143,14 +130,11 @@ func (UnimplementedMemoryServiceServer) Create(context.Context, *MemoryCreate) (
 func (UnimplementedMemoryServiceServer) Get(context.Context, *GetById) (*MemoryRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedMemoryServiceServer) GetHistoricalMemory(context.Context, *GetByUser) (*GetAllRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHistoricalMemory not implemented")
-}
-func (UnimplementedMemoryServiceServer) GetByTagMemory(context.Context, *GetByTag) (*GetAllRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetByTagMemory not implemented")
-}
 func (UnimplementedMemoryServiceServer) GetAll(context.Context, *GetAllReq) (*GetAllRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+}
+func (UnimplementedMemoryServiceServer) GetMemoriesOfOthers(context.Context, *GetByUser) (*GetAllRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMemoriesOfOthers not implemented")
 }
 func (UnimplementedMemoryServiceServer) Update(context.Context, *MemoryUpdate) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
@@ -207,42 +191,6 @@ func _MemoryService_Get_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemoryService_GetHistoricalMemory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetByUser)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemoryServiceServer).GetHistoricalMemory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MemoryService_GetHistoricalMemory_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemoryServiceServer).GetHistoricalMemory(ctx, req.(*GetByUser))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MemoryService_GetByTagMemory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetByTag)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemoryServiceServer).GetByTagMemory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MemoryService_GetByTagMemory_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemoryServiceServer).GetByTagMemory(ctx, req.(*GetByTag))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MemoryService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetAllReq)
 	if err := dec(in); err != nil {
@@ -257,6 +205,24 @@ func _MemoryService_GetAll_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoryServiceServer).GetAll(ctx, req.(*GetAllReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoryService_GetMemoriesOfOthers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoryServiceServer).GetMemoriesOfOthers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoryService_GetMemoriesOfOthers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoryServiceServer).GetMemoriesOfOthers(ctx, req.(*GetByUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -313,16 +279,12 @@ var MemoryService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemoryService_Get_Handler,
 		},
 		{
-			MethodName: "GetHistoricalMemory",
-			Handler:    _MemoryService_GetHistoricalMemory_Handler,
-		},
-		{
-			MethodName: "GetByTagMemory",
-			Handler:    _MemoryService_GetByTagMemory_Handler,
-		},
-		{
 			MethodName: "GetAll",
 			Handler:    _MemoryService_GetAll_Handler,
+		},
+		{
+			MethodName: "GetMemoriesOfOthers",
+			Handler:    _MemoryService_GetMemoriesOfOthers_Handler,
 		},
 		{
 			MethodName: "Update",

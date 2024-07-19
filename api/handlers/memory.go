@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	// md "github.com/mirjalilova/api_gateway/api/middleware"
+	md "github.com/mirjalilova/api_gateway/api/middleware"
 	pb "github.com/mirjalilova/api_gateway/genproto/memory"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +19,7 @@ import (
 // @Tags memories
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param body body pb.MemoryCreateBody true "MemoryCreateBody"
 // @Success 200 {object} string "Memory created successfully"
 // @Failure 400 {object} string "Bad Request"
@@ -31,8 +32,8 @@ func (h *Handlers) CreateMemory(ctx *gin.Context) {
 		return
 	}
 
-	// userID := getuserId(ctx)
-	userID := "567bc6be-1806-43a5-9d07-c386ef92b717"
+	userID := getuserId(ctx)
+	// userID := "567bc6be-1806-43a5-9d07-c386ef92b717"
 
 	req := &pb.MemoryCreate{
 		UserId:      userID,
@@ -66,6 +67,7 @@ func (h *Handlers) CreateMemory(ctx *gin.Context) {
 // @Tags memories
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id query string true "Memory ID"
 // @Success 200 {object} pb.MemoryRes
 // @Failure 400 {object} string "Bad Request"
@@ -75,7 +77,7 @@ func (h *Handlers) GetMemory(ctx *gin.Context) {
 	id := ctx.Query("id")
 
 	req := &pb.GetById{
-		Id:     id,
+		Id: id,
 		// UserId: getuserId(ctx),
 		UserId: "567bc6be-1806-43a5-9d07-c386ef92b717",
 	}
@@ -94,6 +96,7 @@ func (h *Handlers) GetMemory(ctx *gin.Context) {
 // @Tags memories
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param start_date query string false "Start Date"
 // @Param end_date query string false "End Date"
 // @Param tag query string false "Tag"
@@ -137,8 +140,7 @@ func (h *Handlers) GetAllMemories(ctx *gin.Context) {
 	}
 
 	if user_id == "" {
-		// userID = getuserId(ctx)
-		user_id = "567bc6be-1806-43a5-9d07-c386ef92b717"
+		user_id = getuserId(ctx)
 	}
 
 	req := &pb.GetAllReq{
@@ -167,6 +169,7 @@ func (h *Handlers) GetAllMemories(ctx *gin.Context) {
 // @Tags memories
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Memory ID"
 // @Param body body pb.MemoryCreateBody true "MemoryCreateBody"
 // @Success 200 {object} string "Memory updated successfully"
@@ -218,6 +221,7 @@ func (h *Handlers) UpdateMemory(ctx *gin.Context) {
 // @Tags memories
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Memory ID"
 // @Success 200 {object} string "Memory deleted successfully"
 // @Failure 400 {object} string "Bad Request"
@@ -227,7 +231,7 @@ func (h *Handlers) DeleteMemory(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	req := &pb.GetById{
-		Id:     id,
+		Id: id,
 		// UserId: getuserId(ctx),
 		UserId: "567bc6be-1806-43a5-9d07-c386ef92b717",
 	}
@@ -241,11 +245,157 @@ func (h *Handlers) DeleteMemory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Memory %s deleted successfully", id)})
 }
 
-// func getuserId(ctx *gin.Context) string {
-// 	user_id, err := md.GetUserId(ctx.Request)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return ""
-// 	}
-// 	return user_id
-// }
+// @Summary Get all historical memories
+// @Description Get all historical memories with optional filters
+// @Tags memories
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param limit query int false "Limit"
+// @Param offset query int false "Offset"
+// @Success 200 {object} pb.GetAllRes
+// @Failure 400 {object} string "Bad Request"
+// @Failure 500 {object} string "Internal Server Error
+// @Router /memories/hictorical [get]
+func (h *Handlers) GetHistoricalMemory(ctx *gin.Context) {
+	limitStr := ctx.Query("limit")
+	offsetStr := ctx.Query("offset")
+
+	var limit, offset int
+	var err error
+	if limitStr != "" {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+			return
+		}
+	} else {
+		limit = 0
+	}
+
+	if offsetStr != "" {
+		offset, err = strconv.Atoi(offsetStr)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
+			return
+		}
+	} else {
+		offset = 0
+	}
+
+	// user_id = getuserId(ctx)
+	user_id := "567bc6be-1806-43a5-9d07-c386ef92b717"
+
+	req := &pb.GetAllReq{
+		UserId: user_id,
+		Type:   "historical",
+		Filter: &pb.Filter{
+			Limit:  int32(limit),
+			Offset: int32(offset),
+		},
+	}
+
+	res, err := h.Memory.GetAll(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, res)
+}
+
+// @Summary Get by tag memories
+// @Description Get by tag memories with optional filters
+// @Tags memories
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param tag query string false "Tag"
+// @Param limit query int false "Limit"
+// @Param offset query int false "Offset"
+// @Success 200 {object} pb.GetAllRes
+// @Failure 400 {object} string "Bad Request"
+// @Failure 500 {object} string "Internal Server Error
+// @Router /memories/tag [get]
+func (h *Handlers) GetByTagMemory(ctx *gin.Context) {
+	tag := ctx.Query("tag")
+	limitStr := ctx.Query("limit")
+	offsetStr := ctx.Query("offset")
+
+	var limit, offset int
+	var err error
+	if limitStr != "" {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+			return
+		}
+	} else {
+		limit = 0
+	}
+
+	if offsetStr != "" {
+		offset, err = strconv.Atoi(offsetStr)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
+			return
+		}
+	} else {
+		offset = 0
+	}
+
+	// user_id = getuserId(ctx)
+	user_id := "567bc6be-1806-43a5-9d07-c386ef92b717"
+
+	req := &pb.GetAllReq{
+		UserId: user_id,
+		Tag:    tag,
+		Filter: &pb.Filter{
+			Limit:  int32(limit),
+			Offset: int32(offset),
+		},
+	}
+
+	res, err := h.Memory.GetAll(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, res)
+}
+
+func getuserId(ctx *gin.Context) string {
+	user_id, err := md.GetUserId(ctx.Request)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return ""
+	}
+	return user_id
+}
+
+// @Summary Get memories of others
+// @Description Get memories of others with optional filters
+// @Tags memories
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} pb.GetAllRes
+// @Failure 400 {object} string "Bad Request"
+// @Failure 500 {object} string "Internal Server Error
+// @Router /memories/others [get]
+func (h *Handlers) GetMemoriesOfOthers(ctx *gin.Context) {
+	user_id := getuserId(ctx)
+
+	req := &pb.GetByUser{
+		UserId:    user_id,
+	}
+
+	res, err := h.Memory.GetMemoriesOfOthers(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, res)
+}

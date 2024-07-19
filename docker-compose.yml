@@ -1,4 +1,4 @@
-version: '3.91'
+version: '3.9'
 
 services:
   # API Gateway
@@ -8,15 +8,16 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - Staffer
+      - Time
 
 # Docker Networks
 networks:
-  Staffer:
+  Time:
+      name: Time
       external: true
-      name: Staffer
-    
-
+      
+# ///////////////////////////////////////////
 # Docker Volumes
 volumes:
   db:
+  mongo-data:

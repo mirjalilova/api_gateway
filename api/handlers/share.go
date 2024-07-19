@@ -15,6 +15,7 @@ import (
 // @Tags shares
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param share body pb.ShareCreateBody true "Share Create Body"
 // @Success 201 {object} string "Share created successfully"
 // @Failure 400 {object} string "Bad Request"
@@ -50,6 +51,7 @@ func (h *Handlers) CreateShare(c *gin.Context) {
 // @Tags shares
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param memory_id query string true "Memory ID"
 // @Success 200 {object} pb.ShareRes
 // @Failure 400 {object} string "Bad Request"
@@ -79,6 +81,7 @@ func (h *Handlers) GetShares(c *gin.Context) {
 // @Tags shares
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param share_id query string true "Share ID"
 // @Param share body pb.ShareDeleteBody true "Share Delete Body"
 /// @Success 200 {object} string "Share updated successfully"

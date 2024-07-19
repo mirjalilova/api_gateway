@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
 
-	"github.com/go-redis/redis"
 	"github.com/mirjalilova/api_gateway/api"
 	"github.com/mirjalilova/api_gateway/api/handlers"
 	cf "github.com/mirjalilova/api_gateway/config"
@@ -17,38 +15,28 @@ import (
 func main() {
 	config := cf.Load()
 
-	memoryConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", config.MEMORY_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	memoryConn, err := grpc.NewClient(fmt.Sprintf("memory%s", config.MEMORY_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		slog.Error("Error while connecting to memory service: " + err.Error())
 		return
 	}
 	defer memoryConn.Close()
 
-	timelineConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", config.TIMELINE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	timelineConn, err := grpc.NewClient(fmt.Sprintf("timeline%s", config.TIMELINE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		slog.Error("Error while connecting to timeline service: " + err.Error())
 		return
 	}
 	defer memoryConn.Close()
 
-	userConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", config.USER_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	userConn, err := grpc.NewClient(fmt.Sprintf("auth%s", config.USER_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		slog.Error("Error while connecting to user service: " + err.Error())
 		return
 	}
 	defer memoryConn.Close()
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
-
-	if _, err := rdb.Ping().Result(); err != nil {
-		log.Fatalf("Failed to connect to Redis: %v", err)
-	}
-
-	h := handlers.NewHandler(memoryConn, timelineConn, userConn, rdb)
+	h := handlers.NewHandler(memoryConn, timelineConn, userConn)
 
 	r := api.Engine(h)
 

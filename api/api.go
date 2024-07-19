@@ -7,6 +7,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/mirjalilova/api_gateway/api/handlers"
+	"github.com/mirjalilova/api_gateway/api/middleware"
 	// middleware "github.com/mirjalilova/api_gateway/api/middleware"
 )
 
@@ -32,6 +33,17 @@ func Engine(handler *handlers.Handlers) *gin.Engine {
 
 	// protected := router.Group("/", middleware.JWTMiddleware())
 
+	router.Use(middleware.JWTMiddleware())
+	user := router.Group("/user")
+	{
+		user.GET("/profiles", handler.GetProfile)
+        user.PUT("/profiles", handler.EditProfile)
+        user.PUT("/passwords", handler.ChangePassword)
+        user.GET("/setting", handler.GetSetting)
+		user.PUT("/setting", handler.EditSetting)
+		user.DELETE("/", handler.DeleteUser)
+	}
+
 	memory := router.Group("/memories")
 	{
 		memory.GET("/all", handler.GetAllMemories)
@@ -39,6 +51,9 @@ func Engine(handler *handlers.Handlers) *gin.Engine {
 		memory.POST("", handler.CreateMemory)
 		memory.PUT("/", handler.UpdateMemory)
 		memory.DELETE("/", handler.DeleteMemory)
+		memory.GET("/hictorical", handler.GetHistoricalMemory)
+		memory.GET("/tag", handler.GetByTagMemory)
+		memory.GET("/others", handler.GetMemoriesOfOthers)
 	}
 
 	media := router.Group("/media")
@@ -72,5 +87,6 @@ func Engine(handler *handlers.Handlers) *gin.Engine {
 		millistone.GET("/", handler.GetAllMillistones)
 		millistone.GET("/date", handler.GetByDateMillistones)
 	}
+
 	return router
 }

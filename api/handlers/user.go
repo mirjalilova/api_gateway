@@ -14,16 +14,18 @@ import (
 // GetProfile godoc
 // @Summary Get user profile
 // @Description Retrieve the profile of a user with the specified ID
-// @Tags profiles
+// @Tags users
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} auth.UserRes 
 // @Failure 400 {object} string "Bad Request"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /profiles [get]
+// @Router /user/profiles [get]
 func (h *Handlers) GetProfile(c *gin.Context) {
+	userID := getuserId(c)
 	req := &auth.GetById{
-		Id: "567bc6be-1806-43a5-9d07-c386ef92b717",
+		Id: userID,
 	}
 
 	profile, err := h.User.GetProfile(c, req)
@@ -39,14 +41,15 @@ func (h *Handlers) GetProfile(c *gin.Context) {
 // EditProfile godoc
 // @Summary Edit user profile
 // @Description Update the profile of a user with the specified ID
-// @Tags profiles
+// @Tags users
 // @Accept json
 // @Produce json
-// @Param profile body auth.UserRes true "Updated profile details"
+// @Security BearerAuth
+// @Param profile body auth.EditProfileReqBpdy true "Updated profile details"
 // @Success 200 {object} string "Profile updated successfully"
 // @Failure 400 {object} string "Bad Request"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /profiles [put]
+// @Router /user/profiles [put]
 func (h *Handlers) EditProfile(c *gin.Context) {
 	var body auth.EditProfileReqBpdy
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -81,14 +84,15 @@ func (h *Handlers) EditProfile(c *gin.Context) {
 // ChangePassword godoc
 // @Summary Change user password
 // @Description Update the password of a user with the specified ID
-// @Tags passwords
+// @Tags users
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param password body auth.ChangePasswordReqBody true "Updated password details"
 // @Success 200 {object} string "Password updated successfully"
 // @Failure 400 {object} string "Bad Request"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /passwords [put]
+// @Router /user/passwords [put]
 func (h *Handlers) ChangePassword(c *gin.Context) {
 	var body auth.ChangePasswordReqBody
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -121,13 +125,14 @@ func (h *Handlers) ChangePassword(c *gin.Context) {
 // GetSetting godoc
 // @Summary Get user settings
 // @Description Retrieve the settings of a user with the specified ID
-// @Tags settings
+// @Tags users
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} auth.Setting
 // @Failure 400 {object} string "Bad Request"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /settings [get]
+// @Router /user/setting [get]
 func (h *Handlers) GetSetting(c *gin.Context) {
 	req := &auth.GetById{
 		Id: "567bc6be-1806-43a5-9d07-c386ef92b717",
@@ -146,14 +151,15 @@ func (h *Handlers) GetSetting(c *gin.Context) {
 // EditSetting godoc
 // @Summary Edit user settings
 // @Description Update the settings of a user with the specified ID
-// @Tags settings
+// @Tags users
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param setting body auth.Setting true "Updated setting details"
 // @Success 200 {object} string "Setting updated successfully"
 // @Failure 400 {object} string "Bad Request"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /settings [put]
+// @Router /user/setting [put]
 func (h *Handlers) EditSetting(c *gin.Context) {
 	var body auth.Setting
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -191,10 +197,11 @@ func (h *Handlers) EditSetting(c *gin.Context) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} string "User deleted successfully"
 // @Failure 400 {object} string "Bad Request"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /users [delete]
+// @Router /user [delete]
 func (h *Handlers) DeleteUser(c *gin.Context) {
 	req := &auth.GetById{
 		Id: "567bc6be-1806-43a5-9d07-c386ef92b717",

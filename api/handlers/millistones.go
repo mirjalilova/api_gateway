@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	pb "github.com/mirjalilova/api_gateway/genproto/timeline"
 	_ "github.com/mirjalilova/api_gateway/api/docs"
+	pb "github.com/mirjalilova/api_gateway/genproto/timeline"
 )
 
 // CreateMillistones godoc
@@ -17,6 +18,7 @@ import (
 // @Tags millistones
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param body body pb.MillistonesCreateBody true "Millistoneobjecttobecreated"
 // @Success 200 {object} string "Millistone created successfully"
 // @Failure 400 {object} string "Bad Request"
@@ -59,6 +61,7 @@ func (h *Handlers) CreateMillistones(c *gin.Context) {
 // @Tags millistones
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Millistone ID"
 // @Param body body pb.MillistonesCreateBody true "Updated millistone details"
 // @Success 200 {object} string "Millistone updated successfully"
@@ -66,7 +69,7 @@ func (h *Handlers) CreateMillistones(c *gin.Context) {
 // @Failure 500 {object} string "Internal Server Error
 // @Router /millistones/{id} [put]
 func (h *Handlers) UpdateMillistones(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Query("id")
 
 	var body pb.MillistonesCreateBody
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -105,6 +108,7 @@ func (h *Handlers) UpdateMillistones(c *gin.Context) {
 // @Tags millistones
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Millistone ID"
 // @Success 200 {object} string "Millistone deleted successfully"
 // @Failure 400 {object} string "Bad Request"
@@ -133,6 +137,7 @@ func (h *Handlers) DeleteMillistones(c *gin.Context) {
 // @Tags millistones
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Millistone ID"
 // @Success 200 {object} pb.Millistone
 // @Failure 400 {object} string "Bad Request"
@@ -161,6 +166,7 @@ func (h *Handlers) GetMillistone(c *gin.Context) {
 // @Tags millistones
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param date query string false "Date filter (YYYY-MM-DD)"
 // @Param category query string false "Category filter"
 // @Param user_id query string false "User ID filter"
@@ -228,24 +234,33 @@ func (h *Handlers) GetAllMillistones(c *gin.Context) {
 // @Tags millistones
 // @Accept json
 // @Produce json
-// @Param from_date path string true "Start date of range (YYYY-MM-DD)"
-// @Param to_date path string true "End date of range (YYYY-MM-DD)"
+// @Security BearerAuth
+// @Param from_date query string true "Start date of range (YYYY-MM-DD)"
+// @Param to_date query string true "End date of range (YYYY-MM-DD)"
 // @Param user_id query string false "User ID filter"
 // @Success 200 {object} pb.GetAllRes
 // @Failure 400 {object} string "Bad Request"
-// @Failure 500 {object} string "Internal Server Error
+// @Failure 500 {object} string "Internal Server Error"
 // @Router /millistones/date [get]
 func (h *Handlers) GetByDateMillistones(c *gin.Context) {
-	toDate := c.Param("to_date")
-	fromDate := c.Param("from_date")
-	user_id := c.Query("user_id")
+	toDate := c.Query("to_date")
+	fromDate := c.Query("from_date")
+	userId := c.Query("user_id")
 
-	if user_id == "" {
-		user_id = "567bc6be-1806-43a5-9d07-c386ef92b717"
+	if fromDate == "" || toDate == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "from_date and to_date parameters are required"})
+		return
 	}
 
+	if userId == "" {
+		userId = "567bc6be-1806-43a5-9d07-c386ef92b717"
+	}
+
+	// Log the parameters for debugging
+	fmt.Println("Parameters:", fromDate, toDate, userId)
+
 	req := &pb.GetByDate{
-		UserId:   user_id,
+		UserId:   userId,
 		ToDate:   toDate,
 		FromDate: fromDate,
 	}
